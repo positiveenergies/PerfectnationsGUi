@@ -1,0 +1,102 @@
+--PPerfectRise Version 0.0.1
+--Developed by PixelPerfect#8455
+--Version 0.0.1 First interation
+--Date 4/25/23
+--Password: MYPerfect
+local lib = loadstring(game:HttpGet('https://raw.githubusercontent.com/TheoTheEpic/AquaLib/main/AquaLib.lua'))()
+local window = lib.createWindow("RON.UI", "PPerfectRise V0.0.1", true) 
+
+getgenv().SellElectronics = false
+getgenv().UIHandler = false 
+getgenv().switchOn = false
+
+local AmountSelling = 2
+local resourcesTosell = "Electronics"
+
+
+
+
+function sell()
+    while getgenv().SellElectronics == true do
+        task.wait()
+
+        local countryNames = {}
+        for _, country in pairs(workspace.CountryData:GetChildren()) do
+            table.insert(countryNames, country.Name)
+        end
+        
+        for _, countryName in pairs(countryNames) do
+            if getgenv().SellElectronics == false then
+                break
+            end
+            
+            local ohString1 = countryName
+            local ohString2 = "ResourceTrade"
+            local ohTable3 = {
+                [1] = resourcesTosell,
+                [2] = "Sell",
+                [3] = AmountSelling,
+                [4] = 1,
+                [5] = "Trade"
+            }
+            
+            workspace.GameManager.ManageAlliance:FireServer(ohString1, ohString2, ohTable3)
+            task.wait(1)
+        end
+    end
+end
+
+function closeUI()
+    local button = game:GetService("Players").LocalPlayer.PlayerGui.GameGui.MainFrame.AlertSample:FindFirstChild("Yes")
+    if button then
+        for i,v in pairs(getconnections(button.MouseButton1Click)) do
+            v:Fire()
+        end
+    end
+end
+
+
+
+    
+local tab1 = window.createTab("Main")
+
+-- tab.AddButton(text, callback)
+tab1.createButton("Close UI", 
+    function() 
+        window.deleteWindow("window")
+    end)
+
+
+local section1 = tab1.createSection("Money Farming", false)
+section1.createToggle("Trader On", false, function(value) -- tab.createToggle(text, default value, callback)
+    getgenv().SellElectronics = value
+    if getgenv().SellElectronics == true then
+        sell()
+    end
+end)
+
+
+section1.createDropdown("Resource To sell", {"Electronics", "Consumer Goods"}, "Electronics", function(value) -- tab.createDropdown(name, options, callback)
+    resourcesTosell = value
+end)
+
+section1.createSlider("Sell Amount", {min = 1, max = 10, defualt = 2}, function(Value) -- tab.createSlider(text, config(min, max, defualt), callback)
+    AmountSelling = Value -- Will be a number between min and max
+end)
+
+local section2 = tab1.createSection("Notification Control", false)
+
+    section2.createToggle("Turn on UI handler", false, function(value)
+        getgenv().switchOn = value
+            if getgenv().switchOn == true then
+                while getgenv().switchOn == true do
+                    local alertSample = game:GetService("Players").LocalPlayer.PlayerGui.GameGui.MainFrame:WaitForChild("AlertSample")
+                    local button = alertSample:WaitForChild("Yes")
+                    if button then
+                        for i,v in pairs(getconnections(button.MouseButton1Click)) do
+                            v:Fire()
+                        end
+                    end    
+                end
+            end
+    end)
